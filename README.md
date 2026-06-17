@@ -36,7 +36,7 @@ meu-sistema/
 ## Pré-requisitos
 
 - Node.js 20+
-- PostgreSQL rodando localmente (ou um banco na nuvem)
+- PostgreSQL
 
 ## Passo a passo
 
@@ -82,13 +82,4 @@ Acesse http://localhost:5173 e entre com **admin@oficina.com** / **admin123**.
 | PATCH  | /api/ordens/:id/status    | altera status da ordem          |
 | GET    | /api/ordens/resumo        | totais para o painel            |
 
-Todas as rotas de clientes e ordens exigem o header `Authorization: Bearer <token>`.
 
-## Próximos passos sugeridos
-
-- Geração de comprovante/PDF da OS para o cliente
-- Histórico de mudanças de status (com data e responsável)
-- Controle de papéis (ex.: só ADMIN exclui)
-- Filtro por período e relatórios
-- Notificação ao cliente (WhatsApp/e-mail) quando o aparelho fica pronto
-```

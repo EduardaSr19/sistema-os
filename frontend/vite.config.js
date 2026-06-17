@@ -6,11 +6,15 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Encaminha chamadas /api para o backend, evitando CORS em dev.
+      // Em dev, encaminha /api para o backend local — sem CORS
       "/api": {
         target: "http://localhost:3333",
         changeOrigin: true,
       },
     },
+  },
+  build: {
+    // Avisa se algum chunk passar de 600 kB
+    chunkSizeWarningLimit: 600,
   },
 });

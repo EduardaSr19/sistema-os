@@ -5,56 +5,28 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const senhaHash = await bcrypt.hash("admin123", 10);
+  const email = process.env.ADMIN_EMAIL;
+  const senha = process.env.ADMIN_SENHA;
+  const nome  = process.env.ADMIN_NOME || "Administrador";
+
+  if (!email || !senha) {
+    console.error(
+      "❌  Defina ADMIN_EMAIL e ADMIN_SENHA no .env antes de rodar o seed."
+    );
+    process.exit(1);
+  }
+
+  const hash = await bcrypt.hash(senha, 12);
 
   const admin = await prisma.user.upsert({
-    where: { email: "admin@oficina.com" },
-    update: {},
-    create: {
-      nome: "Administrador",
-      email: "admin@oficina.com",
-      senha: senhaHash,
-      role: "ADMIN",
-    },
+    where:  { email },
+    update: { nome, senha: hash, role: "ADMIN" },
+    create: { nome, email, senha: hash, role: "ADMIN" },
   });
 
-  const cliente = await prisma.cliente.create({
-    data: {
-      nome: "Maria Souza",
-      telefone: "(48) 99999-0000",
-      email: "maria@email.com",
-      cpfCnpj: "123.456.789-00",
-      bairro: "Centro",
-    },
-  });
-
-  await prisma.ordemServico.create({
-    data: {
-      clienteId: cliente.id,
-      marca: "Samsung",
-      modelo: "Galaxy S21",
-      equipamento: "Smartphone",
-      condicoes: "Tela quebrada",
-      defeitoRelatado: "Tela quebrada após queda.",
-      laudoTecnico: "Display e digitalizador danificados.",
-      solucao: "Troca de tela",
-      valorMercadorias: 450,
-      valorServicos: 150,
-      descontoPercentual: 10,
-      garantiaMeses: 3,
-      observacoes:
-        "Aparelhos não retirados dentro do prazo de 90 dias estarão sujeitos a desmontagem, reciclagem e venda!",
-      status: "EM_ANALISE",
-      tecnicoId: admin.id,
-    },
-  });
-
-  console.log("Seed concluído. Login: admin@oficina.com / admin123");
+  console.log(`✅  Usuário principal pronto: ${admin.email}`);
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
+  .catch((e) => { console.error(e); process.exit(1); })
   .finally(() => prisma.$disconnect());

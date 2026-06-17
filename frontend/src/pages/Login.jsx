@@ -76,9 +76,7 @@ export function Login() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-xs text-slate-500">
-          Conta de teste (após o seed): admin@oficina.com / admin123
-        </p>
+
       </div>
     </div>
   );
