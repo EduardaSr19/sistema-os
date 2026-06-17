@@ -1,0 +1,106 @@
+// Prisma schema — sistema de Ordem de Serviço
+// Docs: https://www.prisma.io/docs
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TECNICO
+}
+
+enum StatusOS {
+  ABERTA
+  EM_ANALISE
+  AGUARDANDO_APROVACAO
+  APROVADA
+  EM_REPARO
+  CONCLUIDA
+  ENTREGUE
+  CANCELADA
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senha     String
+  role      Role     @default(TECNICO)
+  ordens    OrdemServico[] @relation("TecnicoResponsavel")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cliente {
+  id           String   @id @default(uuid())
+  nome         String   // Nome / Razão Social
+  telefone     String
+  email        String?
+  cpfCnpj      String?  // CNPJ / CPF
+  endereco     String?
+  bairro       String?
+  cep          String?
+  ordens       OrdemServico[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model OrdemServico {
+  id              String   @id @default(uuid())
+  numero          Int      @unique @default(autoincrement())
+
+  // Destinatário
+  cliente               Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId             String
+  informacoesAdicionais String?
+
+  // Objeto do conserto
+  objetoConserto  String?
+  equipamento     String?
+  acessorios      String?
+  marca           String
+  modelo          String
+  serie           String?
+  imei            String?
+  senhaAparelho   String?
+  condicoes       String?
+
+  // Serviço
+  defeitoRelatado String   // Defeitos
+  laudoTecnico    String?  // Laudo técnico
+  solucao         String?  // Solução
+
+  // Garantia
+  termoGarantia   String?
+  garantiaMeses   Int      @default(3)
+
+  // Totais
+  valorMercadorias   Decimal @default(0) @db.Decimal(10, 2)
+  valorServicos      Decimal @default(0) @db.Decimal(10, 2)
+  descontoValor      Decimal @default(0) @db.Decimal(10, 2)
+  descontoPercentual Decimal @default(0) @db.Decimal(5, 2)
+
+  observacoes     String?
+  status          StatusOS @default(ABERTA)
+
+  // Técnico responsável
+  tecnico         User?    @relation("TecnicoResponsavel", fields: [tecnicoId], references: [id])
+  tecnicoId       String?
+
+  // Datas
+  dataEntrada     DateTime @default(now())
+  dataPrevisao    DateTime?
+  dataEntrega     DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([clienteId])
+}
