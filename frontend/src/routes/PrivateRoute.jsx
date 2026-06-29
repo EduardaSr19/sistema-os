@@ -1,8 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-// Bloqueia o acesso a páginas internas quando não há sessão ativa.
-export function PrivateRoute({ children }) {
+export function PrivateRoute({ children, roles }) {
   const { user, carregando } = useAuth();
 
   if (carregando) {
@@ -13,8 +12,10 @@ export function PrivateRoute({ children }) {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

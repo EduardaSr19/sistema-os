@@ -7,13 +7,9 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
-  // Ao montar, tenta recuperar a sessão a partir do token salvo.
   useEffect(() => {
     async function carregar() {
-      if (!getToken()) {
-        setCarregando(false);
-        return;
-      }
+      if (!getToken()) { setCarregando(false); return; }
       try {
         const { data } = await api.get("/auth/me");
         setUser(data);
@@ -33,13 +29,14 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
-  function logout() {
-    setToken(null);
-    setUser(null);
-  }
+  function logout() { setToken(null); setUser(null); }
+
+  const isSuperAdmin = user?.role === "SUPERADMIN";
+  const isAdminLoja  = user?.role === "ADMIN_LOJA";
+  const isTecnico    = user?.role === "TECNICO";
 
   return (
-    <AuthContext.Provider value={{ user, carregando, login, logout }}>
+    <AuthContext.Provider value={{ user, carregando, login, logout, isSuperAdmin, isAdminLoja, isTecnico }}>
       {children}
     </AuthContext.Provider>
   );

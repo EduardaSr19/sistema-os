@@ -26,13 +26,13 @@ function addMeses(data, meses) {
   return d;
 }
 
-function dadosEmpresa() {
+function dadosEmpresa(loja) {
   return {
-    nome: process.env.EMPRESA_NOME || "Sua Assistência Técnica",
-    telefone: process.env.EMPRESA_TELEFONE || "(00) 0000-0000",
-    endereco: process.env.EMPRESA_ENDERECO || "Rua Exemplo, 123 — Sua Cidade/UF",
-    documento: process.env.EMPRESA_DOCUMENTO || "",
-    responsavel: process.env.EMPRESA_RESPONSAVEL || "",
+    nome: loja?.nome || process.env.EMPRESA_NOME || "Assistência Técnica",
+    telefone: loja?.telefone || process.env.EMPRESA_TELEFONE || "",
+    endereco: loja?.endereco || process.env.EMPRESA_ENDERECO || "",
+    documento: loja?.documento || process.env.EMPRESA_DOCUMENTO || "",
+    responsavel: loja?.responsavel || process.env.EMPRESA_RESPONSAVEL || "",
   };
 }
 
@@ -41,7 +41,7 @@ function dadosEmpresa() {
  * O controller faz doc.pipe(res) e doc.end().
  */
 export function buildComprovante(ordem) {
-  const empresa = dadosEmpresa();
+  const empresa = dadosEmpresa(ordem.loja);
   const doc = new PDFDocument({ size: "A4", margin: 40 });
   const { left } = doc.page.margins;
   const larguraUtil = doc.page.width - left - doc.page.margins.right;

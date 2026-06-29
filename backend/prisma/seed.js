@@ -10,21 +10,21 @@ async function main() {
   const nome  = process.env.ADMIN_NOME || "Administrador";
 
   if (!email || !senha) {
-    console.error(
-      "❌  Defina ADMIN_EMAIL e ADMIN_SENHA no .env antes de rodar o seed."
-    );
+    console.error("❌  Defina ADMIN_EMAIL e ADMIN_SENHA no .env antes de rodar o seed.");
     process.exit(1);
   }
 
   const hash = await bcrypt.hash(senha, 12);
 
+  // SUPERADMIN não pertence a nenhuma loja
   const admin = await prisma.user.upsert({
-    where:  { email },
-    update: { nome, senha: hash, role: "ADMIN" },
-    create: { nome, email, senha: hash, role: "ADMIN" },
+    where: { email },
+    update: { nome, senha: hash, role: "SUPERADMIN", lojaId: null },
+    create: { nome, email, senha: hash, role: "SUPERADMIN", lojaId: null },
   });
 
-  console.log(`✅  Usuário principal pronto: ${admin.email}`);
+  console.log(`✅  SUPERADMIN pronto: ${admin.email}`);
+  console.log("   Use o painel de lojas para criar as lojas e seus usuários.");
 }
 
 main()
