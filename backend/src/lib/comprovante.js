@@ -33,6 +33,7 @@ function dadosEmpresa(loja) {
     endereco: loja?.endereco || process.env.EMPRESA_ENDERECO || "",
     documento: loja?.documento || process.env.EMPRESA_DOCUMENTO || "",
     responsavel: loja?.responsavel || process.env.EMPRESA_RESPONSAVEL || "",
+    logo: loja?.logo || "",
   };
 }
 
@@ -47,16 +48,26 @@ export function buildComprovante(ordem) {
   const larguraUtil = doc.page.width - left - doc.page.margins.right;
 
   // ---------- Cabeçalho ----------
+  let textoX = left;
+  if (empresa.logo) {
+    try {
+      doc.image(empresa.logo, left, 38, { fit: [44, 44] });
+      textoX = left + 54;
+    } catch {
+      textoX = left;
+    }
+  }
   doc.fillColor(TINTA).font("Helvetica-Bold").fontSize(8)
-    .text("ORÇAMENTO / ORDEM DE SERVIÇO", left, 38);
-  doc.fontSize(17).text(empresa.nome, left, 50);
+    .text("ORÇAMENTO / ORDEM DE SERVIÇO", textoX, 38);
+  doc.fontSize(17).text(empresa.nome, textoX, 50);
   doc.font("Helvetica").fontSize(8.5).fillColor(CINZA);
-  doc.text(empresa.endereco);
+  doc.text(empresa.endereco, textoX, doc.y);
   doc.text(
-    `Tel.: ${empresa.telefone}${empresa.documento ? `   ·   ${empresa.documento}` : ""}`
+    `Tel.: ${empresa.telefone}${empresa.documento ? `   ·   ${empresa.documento}` : ""}`,
+    textoX
   );
   const resp = ordem.tecnico?.nome || empresa.responsavel;
-  if (resp) doc.text(`Responsável: ${resp}`);
+  if (resp) doc.text(`Responsável: ${resp}`, textoX);
 
   const boxL = left + larguraUtil - 160;
   doc.roundedRect(boxL, 40, 160, 50, 6).fill(AMBAR);

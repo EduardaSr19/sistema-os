@@ -2,8 +2,32 @@ import { useEffect, useState, Fragment } from "react";
 import { api } from "../api/axios.js";
 import { Modal } from "../components/Modal.jsx";
 
-const LOJA_VAZIA = { nome: "", telefone: "", endereco: "", documento: "", responsavel: "" };
+const LOJA_VAZIA = { nome: "", telefone: "", endereco: "", documento: "", responsavel: "", logo: "" };
 const USER_VAZIO = { nome: "", email: "", senha: "", role: "ADMIN_LOJA" };
+
+// Redimensiona a imagem para no máximo 200x200 e converte para base64 (PNG).
+function lerLogoComoBase64(file) {
+  return new Promise((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.onerror = () => reject(new Error("Não foi possível ler a imagem."));
+    leitor.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Arquivo de imagem inválido."));
+      img.onload = () => {
+        const tamanho = 200;
+        const escala = Math.min(1, tamanho / Math.max(img.width, img.height));
+        const w = Math.round(img.width * escala);
+        const h = Math.round(img.height * escala);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.src = leitor.result;
+    };
+    leitor.readAsDataURL(file);
+  });
+}
 
 export function Lojas() {
   const [lojas, setLojas] = useState([]);
@@ -36,8 +60,19 @@ export function Lojas() {
 
   function abrirEdicaoLoja(l) {
     setEditando(l.id);
-    setFormLoja({ nome: l.nome, telefone: l.telefone || "", endereco: l.endereco || "", documento: l.documento || "", responsavel: l.responsavel || "" });
+    setFormLoja({ nome: l.nome, telefone: l.telefone || "", endereco: l.endereco || "", documento: l.documento || "", responsavel: l.responsavel || "", logo: l.logo || "" });
     setErro(""); setModalLoja(true);
+  }
+
+  async function selecionarLogo(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const base64 = await lerLogoComoBase64(file);
+      altLoja("logo", base64);
+    } catch (err) {
+      setErro(err.message || "Erro ao processar a imagem.");
+    }
   }
 
   async function salvarLoja(e) {
@@ -76,7 +111,7 @@ export function Lojas() {
         <button onClick={abrirNovaLoja} className="btn-primary">Nova loja</button>
       </div>
 
-      <div className="card overflow-hidden">
+      <div className="card overflow-x-auto">
         {lojas.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-slate-400">Nenhuma loja cadastrada.</p>
         ) : (
@@ -156,6 +191,19 @@ export function Lojas() {
           </div>
           <div><label className="label">Endereço</label><input className="input" value={formLoja.endereco} onChange={(e) => altLoja("endereco", e.target.value)} /></div>
           <div><label className="label">Responsável técnico</label><input className="input" value={formLoja.responsavel} onChange={(e) => altLoja("responsavel", e.target.value)} /></div>
+          <div>
+            <label className="label">Logo</label>
+            <div className="flex items-center gap-3">
+              {formLoja.logo && (
+                <img src={formLoja.logo} alt="Logo da loja" className="h-12 w-12 rounded-lg object-contain ring-1 ring-slate-200" />
+              )}
+              <input type="file" accept="image/*" className="input" onChange={selecionarLogo} />
+              {formLoja.logo && (
+                <button type="button" className="text-xs text-rose-600 hover:underline" onClick={() => altLoja("logo", "")}>Remover</button>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-slate-400">Aparece no cabeçalho da ordem de serviço.</p>
+          </div>
           <div className="sticky bottom-0 -mx-6 -mb-5 flex justify-end gap-2 border-t border-slate-200 bg-white px-6 py-3">
             <button type="button" className="btn-ghost" onClick={() => setModalLoja(false)}>Cancelar</button>
             <button type="submit" className="btn-primary">Salvar</button>

@@ -31,6 +31,7 @@ model Loja {
   endereco  String?
   documento String?
   responsavel String?
+  logo      String?  @db.Text
   ativa     Boolean  @default(true)
   users     User[]
   clientes  Cliente[]

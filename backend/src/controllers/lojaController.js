@@ -8,6 +8,7 @@ const lojaSchema = z.object({
   endereco: z.string().optional(),
   documento: z.string().optional(),
   responsavel: z.string().optional(),
+  logo: z.string().optional().nullable(),
   ativa: z.boolean().optional(),
 });
 

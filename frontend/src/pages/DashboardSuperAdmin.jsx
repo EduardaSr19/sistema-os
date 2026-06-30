@@ -44,43 +44,45 @@ export function DashboardSuperAdmin() {
             <Link to="/lojas" className="text-marca-600 hover:underline">Criar primeira loja</Link>
           </p>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                <th className="px-5 py-3">Loja</th>
-                <th className="px-5 py-3 text-right">Clientes</th>
-                <th className="px-5 py-3 text-right">Ordens</th>
-                <th className="px-5 py-3 text-right">Em andamento</th>
-                <th className="px-5 py-3 text-right">Faturamento</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {lojas.map((l) => {
-                const emAndamento = emAndamentoStatuses.reduce(
-                  (acc, s) => acc + (l.porStatus?.[s] || 0), 0
-                );
-                return (
-                  <tr key={l.id} className="hover:bg-slate-50">
-                    <td className="px-5 py-3 font-medium text-slate-900">{l.nome}</td>
-                    <td className="px-5 py-3 text-right text-slate-600">{l._count.clientes}</td>
-                    <td className="px-5 py-3 text-right text-slate-600">{l._count.ordens}</td>
-                    <td className="px-5 py-3 text-right">
-                      {emAndamento > 0 ? (
-                        <span className="rounded-full bg-marca-100 px-2 py-0.5 text-xs font-semibold text-marca-700">
-                          {emAndamento}
-                        </span>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3 text-right font-medium text-slate-900">
-                      {moeda(l.faturamentoTotal)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-5 py-3">Loja</th>
+                  <th className="px-5 py-3 text-right">Clientes</th>
+                  <th className="px-5 py-3 text-right">Ordens</th>
+                  <th className="px-5 py-3 text-right">Em andamento</th>
+                  <th className="px-5 py-3 text-right">Faturamento</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {lojas.map((l) => {
+                  const emAndamento = emAndamentoStatuses.reduce(
+                    (acc, s) => acc + (l.porStatus?.[s] || 0), 0
+                  );
+                  return (
+                    <tr key={l.id} className="hover:bg-slate-50">
+                      <td className="px-5 py-3 font-medium text-slate-900">{l.nome}</td>
+                      <td className="px-5 py-3 text-right text-slate-600">{l._count.clientes}</td>
+                      <td className="px-5 py-3 text-right text-slate-600">{l._count.ordens}</td>
+                      <td className="px-5 py-3 text-right">
+                        {emAndamento > 0 ? (
+                          <span className="rounded-full bg-marca-100 px-2 py-0.5 text-xs font-semibold text-marca-700">
+                            {emAndamento}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3 text-right font-medium text-slate-900">
+                        {moeda(l.faturamentoTotal)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

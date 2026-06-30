@@ -192,7 +192,7 @@ export function OrdensServico() {
         ))}
       </div>
 
-      <div className="card overflow-hidden">
+      <div className="card overflow-x-auto">
         {ordens.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-slate-400">
             Nenhuma ordem encontrada.

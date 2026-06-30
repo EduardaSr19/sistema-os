@@ -93,7 +93,7 @@ export function Clientes() {
         onChange={(e) => setBusca(e.target.value)}
       />
 
-      <div className="card overflow-hidden">
+      <div className="card overflow-x-auto">
         {clientes.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-slate-400">
             Nenhum cliente encontrado.
