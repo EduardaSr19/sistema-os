@@ -17,7 +17,7 @@ function moeda(v) {
 
 function dataBR(d) {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString("pt-BR");
+  return new Date(d).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
 }
 
 function addMeses(data, meses) {
@@ -180,7 +180,7 @@ export function buildComprovante(ordem) {
   linhaAssinatura(doc, left + colW + 40, yAss, colW, "Responsável técnico");
 
   doc.fontSize(7).fillColor(CINZA).text(
-    `Emitido em ${new Date().toLocaleString("pt-BR")}`,
+    `Emitido em ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`,
     left,
     yAss + 30,
     { width: larguraUtil, align: "center", lineBreak: false }
